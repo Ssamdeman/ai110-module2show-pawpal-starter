@@ -6,13 +6,25 @@
 
 - Briefly describe your initial UML design.
 - What classes did you include, and what responsibilities did you assign to each?
+Answer: 
+made many classes that met all requirements 
+
+Owner:	Holds name + time window, computes available minutes
+Pet	Name + species (enum)
+Task:	Title, duration, priority (enum)
+Scheduler:	Takes owner + tasks, runs generate() → returns a Schedule
+ScheduledTask:	Wraps a Task with assigned start/end times 
+Schedule: Holds scheduled tasks, skipped tasks, and a su
+Priority:	Enum: HIGH / MEDIUM / LOW
+Species	Enum: DOG / CAT / OTHER
+
 
 **b. Design changes**
 
 - Did your design change during implementation?
 - If yes, describe at least one change and why you made it.
 
----
+Initially I was thinking about priority, but now it became the most important thing, so now I am really using it as well as the tasks itself — it will depend on the priority.  
 
 ## 2. Scheduling Logic and Tradeoffs
 
