@@ -8,7 +8,9 @@ A smart pet-care scheduling app built with Python and Streamlit. PawPal+ helps a
 
 <!-- Replace your_screenshot_name.png with the actual filename of your screenshot -->
 
-<a href="![alt text](image.png)" target="_blank"><img src='![alt text](image-1.png)' title='PawPal App' width='' alt='PawPal App' class='center-block' /></a>
+![PawPal App](image.png)
+
+![PawPal App](image-1.png)
 
 ---
 
