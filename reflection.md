@@ -39,6 +39,11 @@ total_minutes_scheduled is a constructor param — it's always derivable from th
 - What constraints does your scheduler consider (for example: time, priority, preferences)?
 - How did you decide which constraints mattered most?
 
+The scheduler considers three constraints: the owner's available time window (hard limit — tasks that don't fit are skipped entirely), task priority (HIGH tasks are always attempted before MEDIUM or LOW), and preferred_time (a soft tiebreaker within the same priority band — earlier preferred times are scheduled first).
+
+Priority was the most important because pet care has real urgency differences: a vet appointment or medication is not the same as an optional enrichment game. Time window is a hard physical constraint — you cannot schedule 3 hours of tasks into a 1-hour window. Preferred_time is secondary because it is "nice to have" rather than a requirement.
+
+
 **b. Tradeoffs**
 
 - Describe one tradeoff your scheduler makes.
@@ -94,6 +99,7 @@ one function would make generate() harder to test and reason about independently
 **b. Judgment and verification**
 
 - Describe one moment where you did not accept an AI suggestion as-is.
+    there is scheulde it was given it did nto make sense I asked to epxlain it btter and using atomic thinking and it id and able to get m
 - How did you evaluate or verify what the AI suggested?
     Re do it again with specifsi the issue I was struggle it 
 
@@ -119,10 +125,12 @@ These mattered because sorting and conflicts are easy to get subtly wrong — li
 
 - What part of this project are you most satisfied with?
 
+The part I am most satisfied with is the `Scheduler` class and how cleanly the Phase 3 methods (`sort_by_time`, `filter_tasks`, `mark_task_complete`, `check_conflicts`) fit into the design without needing to rewrite anything. The separation between `generate()` (builds the schedule) and `check_conflicts()` (validates it) paid off — I could add conflict detection without touching the scheduling algorithm at all. The UI update in Phase 4 also went smoothly because the backend logic was already solid: all I had to do was call the right methods and pass results to Streamlit components.
+
 **b. What you would improve**
 
-- If you had another iteration, what would you improve or redesign?
+If I had another iteration, I would improve two things. First, I would add a drag-and-drop or manual override so the owner can reorder tasks after the schedule is generated — right now the scheduler decides everything and the user has no way to say "move the walk to later." Second, I would persist `preferred_time` and `recurrence` through the JSON file so recurring tasks and time preferences survive a browser refresh. Currently those fields exist in the class but are not saved to disk, which means they reset every session.
 
 **c. Key takeaway**
 
-- What is one important thing you learned about designing systems or working with AI on this project?
+The most important thing I learned is that AI is best used at the design stage, not the debugging stage. When I used AI to verify my class diagram and catch structural bugs (like `available_minutes()` crashing because `time` objects can't do arithmetic) *before writing any code*, it saved a lot of time. When I tried to use it to debug an already-broken piece of logic, the answers were less useful because I hadn't given the AI enough context about what the code was supposed to do. Starting with a clear plan and verifying it with AI first made the actual implementation much smoother.

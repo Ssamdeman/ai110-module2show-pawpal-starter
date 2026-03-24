@@ -1,102 +1,90 @@
-# PawPal+ (Module 2 Project)
+# PawPal+
 
-You are building **PawPal+**, a Streamlit app that helps a pet owner plan care tasks for their pet.
-
-## Scenario
-
-A busy pet owner needs help staying consistent with pet care. They want an assistant that can:
-
-- Track pet care tasks (walks, feeding, meds, enrichment, grooming, etc.)
-- Consider constraints (time available, priority, owner preferences)
-- Produce a daily plan and explain why it chose that plan
-
-Your job is to design the system first (UML), then implement the logic in Python, then connect it to the Streamlit UI.
-
-## What you will build
-
-Your final app should:
-
-- Let a user enter basic owner + pet info
-- Let a user add/edit tasks (duration + priority at minimum)
-- Generate a daily schedule/plan based on constraints and priorities
-- Display the plan clearly (and ideally explain the reasoning)
-- Include tests for the most important scheduling behaviors
-
-## Getting started
-
-### Setup
-
-```bash
-python -m venv .venv
-source .venv/bin/activate  # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
-```
-
-## Smarter Scheduling
-
-Module 2 extended the core scheduler with four algorithmic improvements:
-
-### Sort by time
-`Scheduler.sort_by_time()` returns a pet's tasks ordered by `preferred_time`
-(earliest first). Tasks with no time preference are pushed to the end using a
-sentinel value (`24 * 60` minutes). The original task list is never mutated.
-
-### Filter by status or pet name
-`Scheduler.filter_tasks(completed=..., pet_name=...)` narrows a task list without
-touching the underlying data. Pass `completed=True` for done tasks, `completed=False`
-for pending, or a `pet_name` string to gate on the scheduler's assigned pet.
-
-### Recurring task automation
-Tasks carry a `recurrence` field (`DAILY` or `WEEKLY`) and a `due_date`.
-Calling `Scheduler.mark_task_complete(task)` marks the task done **and**
-automatically appends a fresh copy to `pet.tasks` with the next due date
-calculated via Python's `timedelta` (`+1 day` for daily, `+7 days` for weekly).
-Completed tasks are kept as a history record; `generate()` only schedules
-pending tasks.
-
-### Conflict detection
-Two methods guard against scheduling collisions:
-
-- `Scheduler.check_conflicts(schedule)` — scans one pet's schedule for
-  overlapping time slots using a pairwise interval test
-  (`a_start < b_end and b_start < a_end`). Returns warning strings; never raises.
-- `Scheduler.cross_pet_conflicts(pairs)` — checks whether tasks from **different**
-  pets overlap in time, catching cases where one person or sitter cannot
-  physically handle both pets at once.
-
-Both methods use `itertools.combinations` to generate unique slot pairs cleanly.
+A smart pet-care scheduling app built with Python and Streamlit. PawPal+ helps a busy pet owner plan their day by automatically prioritizing tasks, detecting conflicts, and remembering recurring routines.
 
 ---
 
-## Testing PawPal+
+## 📸 Demo
 
-Run all tests with:
+<!-- Replace your_screenshot_name.png with the actual filename of your screenshot -->
+
+<a href="![alt text](image.png)" target="_blank"><img src='![alt text](image-1.png)' title='PawPal App' width='' alt='PawPal App' class='center-block' /></a>
+
+---
+
+## Features
+
+### Priority-based scheduling
+
+The scheduler sorts pending tasks by **priority first** (HIGH → MEDIUM → LOW), then by **preferred time** as a tiebreaker within the same priority band. This guarantees that the most critical care tasks — medications, vet appointments — are always placed before optional enrichment activities, regardless of when they were added.
+
+### Sort by preferred time
+
+`Scheduler.sort_by_time()` returns a pet's task list ordered by `preferred_time` (earliest first). Tasks with no time preference are pushed to the end using a sentinel value (`24 × 60` minutes), so they never displace tasks that have an explicit ideal start time. The original task list is never mutated.
+
+### Filter by status or pet
+
+`Scheduler.filter_tasks(completed=..., pet_name=...)` narrows the task list without modifying the underlying data. Pass `completed=False` for the pending queue, `completed=True` for a history view, or a `pet_name` string to scope results to a specific pet. The UI exposes this as an **All / Pending / Completed** radio toggle above the task table.
+
+### Conflict detection
+
+Two methods guard against scheduling collisions:
+
+- **`check_conflicts(schedule)`** — scans one pet's schedule for overlapping time slots using a pairwise interval test (`a_start < b_end and b_start < a_end`). Returns plain-English warning strings; never raises an exception so the app keeps running.
+- **`cross_pet_conflicts(pairs)`** — checks whether tasks from _different_ pets overlap in time, catching cases where a single sitter cannot physically handle both pets at once.
+
+Both methods use `itertools.combinations` to generate every unique slot pair cleanly. Results surface in the UI as `st.warning`; a conflict-free schedule shows `st.success`.
+
+### Daily and weekly recurrence
+
+Tasks carry a `recurrence` field (`DAILY`, `WEEKLY`, or `NONE`) and an optional `due_date`. When you click **Done** on a recurring task, `Scheduler.mark_task_complete()` marks it complete _and_ automatically appends a fresh copy to `pet.tasks` with the next due date calculated by Python's `timedelta` (+1 day for daily, +7 days for weekly). Completed tasks remain as a history record; `generate()` only schedules pending tasks.
+
+### Greedy first-fit scheduling
+
+`Scheduler.generate()` uses a greedy first-fit algorithm: tasks are sorted once by `(priority, preferred_time)` and placed in order — each task is scheduled if it fits in the remaining window, skipped permanently if it does not. This is O(n log n) and correct for the 5–10 tasks typical of a pet care day. Tasks that don't fit appear in a `st.table` skipped list so the owner can adjust their time window.
+
+### Persistent data
+
+Owner, pet, and task data are saved to `pawpal_data.json` after every change. A browser refresh reloads the last saved state automatically — nothing is lost between sessions.
+
+---
+
+## How to run
+
+```bash
+python -m venv .venv
+source .venv/bin/activate      # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+streamlit run app.py
+```
+
+---
+
+## Project structure
+
+```
+pawpal_system.py   Core domain classes and scheduling logic
+app.py             Streamlit UI — connects to pawpal_system
+tests/
+  test_pawpal.py   11 unit tests covering sorting, recurrence, and conflict detection
+UML-diagram.md     Final Mermaid.js class diagram (paste into mermaid.live)
+reflection.md      Design decisions, tradeoffs, and AI collaboration notes
+pawpal_data.json   Auto-generated persistence file (created on first save)
+```
+
+---
+
+## Running the tests
 
 ```bash
 python -m pytest tests/test_pawpal.py -v
 ```
 
-### What the tests cover
+| Area                   | What is tested                                                                                                     |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| **Sorting**            | Tasks return in chronological order; `None` preferred_time always goes last; priority beats time when both are set |
+| **Recurrence**         | Daily task spawns a new task due the next day; `pet.tasks` grows by 1; non-recurring tasks return `None`           |
+| **Conflict detection** | Overlapping slots produce a warning; back-to-back slots do not; empty schedule returns no warnings                 |
+| **Core behavior**      | Marking a task complete flips `completed`; adding tasks increases task count                                       |
 
-| Area | Tests |
-|---|---|
-| **Sorting** | Tasks return in chronological order; `None` preferred_time always goes last; priority beats time when both are set |
-| **Recurrence** | Daily task spawns a new task due the next day; `pet.tasks` grows by 1; non-recurring tasks return `None` |
-| **Conflict detection** | Overlapping slots produce a warning; back-to-back slots do not; empty schedule returns no warnings |
-| **Core behavior** | Marking a task complete flips `completed`; adding tasks increases task count |
-
-### Confidence level
-
-⭐⭐⭐⭐ 4/5 — the core logic is solid and all 11 tests pass, but no system is perfect. Areas like cross-pet scheduling and greedy edge cases could use more coverage.
-
----
-
-### Suggested workflow
-
-1. Read the scenario carefully and identify requirements and edge cases.
-2. Draft a UML diagram (classes, attributes, methods, relationships).
-3. Convert UML into Python class stubs (no logic yet).
-4. Implement scheduling logic in small increments.
-5. Add tests to verify key behaviors.
-6. Connect your logic to the Streamlit UI in `app.py`.
-7. Refine UML so it matches what you actually built.
+All 11 tests pass. Confidence: 4/5 — core logic is solid; greedy edge cases and cross-pet integration could use more coverage.

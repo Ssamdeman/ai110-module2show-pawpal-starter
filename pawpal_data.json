@@ -6,5 +6,36 @@
     "day_start": "07:00",
     "day_end": "09:00"
   },
-  "tasks": []
+  "tasks": [
+    {
+      "title": "Morning walk",
+      "duration_minutes": 20,
+      "priority": "HIGH",
+      "completed": true
+    },
+    {
+      "title": "Morning walk",
+      "duration_minutes": 20,
+      "priority": "HIGH",
+      "completed": true
+    },
+    {
+      "title": "Morning walk",
+      "duration_minutes": 24,
+      "priority": "MEDIUM",
+      "completed": false
+    },
+    {
+      "title": "Morning walkdasd",
+      "duration_minutes": 24,
+      "priority": "MEDIUM",
+      "completed": false
+    },
+    {
+      "title": "Morning walkdasd",
+      "duration_minutes": 23,
+      "priority": "MEDIUM",
+      "completed": false
+    }
+  ]
 }
