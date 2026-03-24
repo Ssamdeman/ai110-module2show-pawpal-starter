@@ -87,12 +87,15 @@ one function would make generate() harder to test and reason about independently
 **a. How you used AI**
 
 - How did you use AI tools during this project (for example: design brainstorming, debugging, refactoring)?
+    desinginsds and fixing come code verify my plannig before even doing any code.
 - What kinds of prompts or questions were most helpful?
+    give me role and resudce thier explaniotna an make short resaponces 
 
 **b. Judgment and verification**
 
 - Describe one moment where you did not accept an AI suggestion as-is.
 - How did you evaluate or verify what the AI suggested?
+    Re do it again with specifsi the issue I was struggle it 
 
 ---
 
@@ -100,13 +103,13 @@ one function would make generate() harder to test and reason about independently
 
 **a. What you tested**
 
-- What behaviors did you test?
-- Why were these tests important?
+I tested three main things: sorting (tasks come back in the right order, None times go last, priority beats preferred time), recurrence (completing a daily task actually creates a new one for the next day), and conflict detection (overlapping slots get flagged, back-to-back ones don't).
+
+These mattered because sorting and conflicts are easy to get subtly wrong — like thinking adjacent slots are overlapping, or assuming time always beats priority.
 
 **b. Confidence**
 
-- How confident are you that your scheduler works correctly?
-- What edge cases would you test next if you had more time?
+4/5. All 11 tests pass and the logic holds up on the cases I threw at it. I knocked off one star because the greedy scheduler can miss valid schedules in tricky situations (a big task blocking smaller ones behind it), and I haven't tested cross-pet conflicts with real generated schedules yet.
 
 ---
 

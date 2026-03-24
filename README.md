@@ -68,6 +68,29 @@ Both methods use `itertools.combinations` to generate unique slot pairs cleanly.
 
 ---
 
+## Testing PawPal+
+
+Run all tests with:
+
+```bash
+python -m pytest tests/test_pawpal.py -v
+```
+
+### What the tests cover
+
+| Area | Tests |
+|---|---|
+| **Sorting** | Tasks return in chronological order; `None` preferred_time always goes last; priority beats time when both are set |
+| **Recurrence** | Daily task spawns a new task due the next day; `pet.tasks` grows by 1; non-recurring tasks return `None` |
+| **Conflict detection** | Overlapping slots produce a warning; back-to-back slots do not; empty schedule returns no warnings |
+| **Core behavior** | Marking a task complete flips `completed`; adding tasks increases task count |
+
+### Confidence level
+
+⭐⭐⭐⭐ 4/5 — the core logic is solid and all 11 tests pass, but no system is perfect. Areas like cross-pet scheduling and greedy edge cases could use more coverage.
+
+---
+
 ### Suggested workflow
 
 1. Read the scenario carefully and identify requirements and edge cases.
